@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -12,6 +13,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import {
   Home,
+  KeyRound,
   Loader2,
   LogIn,
   LogOut,
@@ -20,12 +22,14 @@ import {
   Phone,
   RefreshCw,
   ShieldAlert,
+  ShieldCheck,
   Wrench,
 } from "lucide-react";
+import { useState } from "react";
 import type { Lead } from "../backend";
 import { JobType } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
-import { useGetAllLeads, useIsAdmin } from "../hooks/useQueries";
+import { useClaimAdmin, useGetAllLeads, useIsAdmin } from "../hooks/useQueries";
 
 const JOB_TYPE_LABELS: Record<JobType, string> = {
   [JobType.repair]: "Repair",
@@ -64,6 +68,23 @@ export default function Dashboard() {
     refetch,
     isFetching,
   } = useGetAllLeads();
+
+  const claimAdmin = useClaimAdmin();
+  const [adminToken, setAdminToken] = useState("");
+  const [claimError, setClaimError] = useState("");
+  const [claimSuccess, setClaimSuccess] = useState(false);
+
+  const handleClaimAdmin = async () => {
+    setClaimError("");
+    try {
+      await claimAdmin.mutateAsync(adminToken);
+      setClaimSuccess(true);
+    } catch {
+      setClaimError(
+        "Invalid token. Please check your Caffeine admin token and try again.",
+      );
+    }
+  };
 
   const sortedLeads: Lead[] = leads
     ? [...leads].sort((a, b) => Number(b.createdAt - a.createdAt))
@@ -175,29 +196,93 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Access denied */}
+        {/* Access denied - show claim admin form */}
         {isLoggedIn && !adminLoading && !isAdmin && (
-          <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
-              <ShieldAlert className="w-10 h-10 text-red-600" />
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-2xl text-brand-navy">
-                Access Denied
-              </h2>
-              <p className="text-muted-foreground mt-2 max-w-sm">
-                Your account does not have administrator privileges. Please
-                contact support if you believe this is an error.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              onClick={clear}
-              className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+          <div className="flex flex-col items-center justify-center gap-6 py-16 text-center">
+            {claimSuccess ? (
+              <>
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                  <ShieldCheck className="w-10 h-10 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-2xl text-brand-navy">
+                    Admin Access Granted
+                  </h2>
+                  <p className="text-muted-foreground mt-2 max-w-sm">
+                    You now have administrator access. Reload the page to view
+                    your leads.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => window.location.reload()}
+                  className="bg-brand-orange hover:bg-brand-orange-hover text-white border-0 px-8"
+                >
+                  View Leads Dashboard
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center">
+                  <ShieldAlert className="w-10 h-10 text-amber-600" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-2xl text-brand-navy">
+                    Set Up Admin Access
+                  </h2>
+                  <p className="text-muted-foreground mt-2 max-w-sm">
+                    Enter your Caffeine admin token to claim administrator
+                    access for this app. You only need to do this once.
+                  </p>
+                </div>
+                <div className="w-full max-w-sm space-y-3">
+                  <div className="relative">
+                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="password"
+                      placeholder="Enter admin token"
+                      value={adminToken}
+                      onChange={(e) => setAdminToken(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleClaimAdmin()}
+                      className="pl-9"
+                      data-ocid="dashboard.input"
+                    />
+                  </div>
+                  {claimError && (
+                    <p
+                      className="text-red-600 text-sm"
+                      data-ocid="dashboard.error_state"
+                    >
+                      {claimError}
+                    </p>
+                  )}
+                  <Button
+                    onClick={handleClaimAdmin}
+                    disabled={claimAdmin.isPending || !adminToken}
+                    className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white border-0"
+                    data-ocid="dashboard.primary_button"
+                  >
+                    {claimAdmin.isPending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <ShieldCheck className="w-4 h-4 mr-2" />
+                    )}
+                    Claim Admin Access
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Find your admin token in the Caffeine platform under your
+                    app settings.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={clear}
+                  className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            )}
           </div>
         )}
 

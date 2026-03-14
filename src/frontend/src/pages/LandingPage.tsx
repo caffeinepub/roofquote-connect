@@ -15,6 +15,7 @@ import {
   CheckCircle,
   ChevronRight,
   Clock,
+  Facebook,
   FileText,
   Home,
   Loader2,
@@ -31,8 +32,8 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { JobType, useSubmitLead } from "../hooks/useQueries";
 
-const PHONE_NUMBER = "0800 000 0000";
-const PHONE_HREF = "tel:08000000000";
+const PHONE_NUMBER = "07400 701164";
+const PHONE_HREF = "tel:07400701164";
 
 const STAR_KEYS = ["s1", "s2", "s3", "s4", "s5"];
 function StarRating({ count = 5 }: { count?: number }) {
@@ -121,11 +122,11 @@ export default function LandingPage() {
             <a
               href={PHONE_HREF}
               className="flex items-center gap-1.5 text-white hover:text-brand-orange transition-colors font-semibold text-sm sm:text-base"
-              aria-label="Call us free"
+              aria-label="Call us"
             >
               <Phone className="w-4 h-4 text-brand-orange" />
               <span className="hidden sm:inline">{PHONE_NUMBER}</span>
-              <span className="sm:hidden">Call Free</span>
+              <span className="sm:hidden">Call Us</span>
             </a>
             <Button
               onClick={scrollToForm}
@@ -178,7 +179,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 bg-brand-orange/20 border border-brand-orange/40 text-brand-orange px-3 py-1 rounded-full text-sm font-semibold mb-4"
               >
                 <MapPin className="w-3.5 h-3.5" />
-                Serving Homeowners Across the UK
+                Serving Manchester &amp; Greater Manchester
               </motion.div>
               <motion.h1
                 variants={fadeUp}
@@ -365,7 +366,7 @@ export default function LandingPage() {
                           id="postcode"
                           data-ocid="form.postcode.input"
                           type="text"
-                          placeholder="SW1A 1AA"
+                          placeholder="M1 1AA"
                           required
                           value={formData.postcode}
                           onChange={(e) =>
@@ -565,7 +566,7 @@ export default function LandingPage() {
                 step: "02",
                 icon: <Users className="w-7 h-7 text-white" />,
                 title: "We Connect You With Roofers",
-                desc: "We match your request with trusted, vetted local roofing contractors in your area.",
+                desc: "We match your request with trusted, vetted local roofing contractors in Manchester and Greater Manchester.",
               },
               {
                 step: "03",
@@ -651,8 +652,8 @@ export default function LandingPage() {
               },
               {
                 icon: <MapPin className="w-6 h-6 text-brand-orange" />,
-                title: "Local Contractors",
-                desc: "We only connect you with established roofers operating in your local area.",
+                title: "Manchester Based",
+                desc: "We only connect you with established roofers operating across Manchester and Greater Manchester.",
               },
               {
                 icon: <FileText className="w-6 h-6 text-brand-orange" />,
@@ -713,10 +714,10 @@ export default function LandingPage() {
             className="text-center mb-12"
           >
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
-              What UK Homeowners Say
+              What Manchester Homeowners Say
             </h2>
             <p className="text-muted-foreground text-lg">
-              Trusted by thousands of homeowners across the UK
+              Trusted by homeowners across Manchester and Greater Manchester
             </p>
           </motion.div>
 
@@ -724,19 +725,19 @@ export default function LandingPage() {
             {[
               {
                 name: "Sarah M.",
-                location: "Manchester",
+                location: "Salford, Manchester",
                 rating: 5,
                 text: "After noticing a leak in my loft, I used RoofQuote Connect and had three local roofers contact me within the same day. The work was done quickly and professionally. Brilliant service!",
               },
               {
                 name: "David K.",
-                location: "Birmingham",
+                location: "Stockport, Greater Manchester",
                 rating: 5,
                 text: "I needed my entire roof replacing after storm damage. Got four competitive quotes within 48 hours. Saved a fortune compared to the first company I called directly. Highly recommend.",
               },
               {
                 name: "Lisa T.",
-                location: "London",
+                location: "Trafford, Manchester",
                 rating: 5,
                 text: "Fast, easy, and completely free. The roofer they connected me with was punctual, tidy, and did an excellent job on my flat roof. I'll definitely use RoofQuote Connect again.",
               },
@@ -820,7 +821,7 @@ export default function LandingPage() {
               custom={2}
               className="text-white/80 text-xl mb-8 max-w-xl mx-auto"
             >
-              Join thousands of UK homeowners who found trusted local roofers
+              Join homeowners across Manchester who found trusted local roofers
               through RoofQuote Connect.
             </motion.p>
             <motion.div
@@ -863,9 +864,9 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-white/60 text-sm leading-relaxed max-w-sm">
-                RoofQuote Connect connects homeowners with local roofing
-                contractors. We are not a roofing company. All contractors are
-                independent professionals.
+                RoofQuote Connect connects homeowners in Manchester and Greater
+                Manchester with local roofing contractors. We are not a roofing
+                company. All contractors are independent professionals.
               </p>
             </div>
             <div>
@@ -904,7 +905,7 @@ export default function LandingPage() {
             </div>
             <div>
               <h4 className="text-white font-semibold mb-3 text-sm uppercase tracking-wider">
-                Contact & Legal
+                Contact &amp; Legal
               </h4>
               <ul className="space-y-2">
                 <li>
@@ -918,11 +919,15 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <a
-                    href="mailto:info@roofquoteconnect.co.uk"
+                    href="mailto:roofquoteconnect@gmail.com"
                     className="text-white/60 hover:text-white text-sm transition-colors"
                   >
-                    info@roofquoteconnect.co.uk
+                    roofquoteconnect@gmail.com
                   </a>
+                </li>
+                <li className="flex items-center gap-1.5 text-white/60 text-sm">
+                  <Facebook className="w-3.5 h-3.5" />
+                  roof quote connect
                 </li>
                 <li>
                   <a

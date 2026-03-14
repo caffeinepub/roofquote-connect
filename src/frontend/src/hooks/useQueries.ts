@@ -26,6 +26,21 @@ export function useIsAdmin() {
   });
 }
 
+export function useClaimAdmin() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: async (token: string) => {
+      if (!actor) throw new Error("Not connected");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (actor as any)._initializeAccessControlWithSecret(token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+    },
+  });
+}
+
 export interface SubmitLeadInput {
   name: string;
   phone: string;
