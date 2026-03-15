@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -13,23 +14,22 @@ import {
 import { Link } from "@tanstack/react-router";
 import {
   Home,
-  KeyRound,
   Loader2,
-  LogIn,
+  Lock,
   LogOut,
   Mail,
   MapPin,
   Phone,
   RefreshCw,
-  ShieldAlert,
-  ShieldCheck,
   Wrench,
 } from "lucide-react";
 import { useState } from "react";
 import type { Lead } from "../backend";
 import { JobType } from "../backend";
-import { useInternetIdentity } from "../hooks/useInternetIdentity";
-import { useClaimAdmin, useGetAllLeads, useIsAdmin } from "../hooks/useQueries";
+import { useGetAllLeadsPublic } from "../hooks/useQueries";
+
+const ADMIN_PASSWORD = "alfie1234";
+const SESSION_KEY = "rqc_admin_auth";
 
 const JOB_TYPE_LABELS: Record<JobType, string> = {
   [JobType.repair]: "Repair",
@@ -57,40 +57,42 @@ function formatDate(nanoseconds: bigint): string {
 }
 
 export default function Dashboard() {
-  const { identity, login, clear, isLoggingIn, isInitializing } =
-    useInternetIdentity();
-  const isLoggedIn = !!identity;
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    () => sessionStorage.getItem(SESSION_KEY) === "true",
+  );
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const {
     data: leads,
     isLoading: leadsLoading,
     refetch,
     isFetching,
-  } = useGetAllLeads();
-
-  const claimAdmin = useClaimAdmin();
-  const [adminToken, setAdminToken] = useState("");
-  const [claimError, setClaimError] = useState("");
-  const [claimSuccess, setClaimSuccess] = useState(false);
-
-  const handleClaimAdmin = async () => {
-    setClaimError("");
-    try {
-      await claimAdmin.mutateAsync(adminToken);
-      setClaimSuccess(true);
-    } catch {
-      setClaimError(
-        "Invalid token. Please check your Caffeine admin token and try again.",
-      );
-    }
-  };
+  } = useGetAllLeadsPublic();
 
   const sortedLeads: Lead[] = leads
     ? [...leads].sort((a, b) => Number(b.createdAt - a.createdAt))
     : [];
 
   const year = new Date().getFullYear();
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (password === ADMIN_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, "true");
+      setIsAuthenticated(true);
+      setError("");
+    } else {
+      setError("Incorrect password. Please try again.");
+    }
+  }
+
+  function handleLogout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    setIsAuthenticated(false);
+    setPassword("");
+    setError("");
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -105,190 +107,94 @@ export default function Dashboard() {
               RoofQuote <span className="text-brand-orange">Connect</span>
             </span>
           </Link>
-          <div className="flex items-center gap-3">
-            {isLoggedIn && (
-              <span className="text-white/60 text-xs hidden sm:inline">
-                {identity?.getPrincipal().toString().slice(0, 12)}...
-              </span>
-            )}
-            {isLoggedIn ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clear}
-                className="border-white/30 text-white hover:bg-white/10 bg-transparent"
-              >
-                <LogOut className="w-4 h-4 mr-1.5" />
-                Logout
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={login}
-                disabled={isLoggingIn || isInitializing}
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white border-0"
-              >
-                {isLoggingIn ? (
-                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                ) : (
-                  <LogIn className="w-4 h-4 mr-1.5" />
-                )}
-                Login
-              </Button>
-            )}
-          </div>
+          {isAuthenticated && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+              data-ocid="admin.logout_button"
+            >
+              <LogOut className="w-4 h-4 mr-1.5" />
+              Logout
+            </Button>
+          )}
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full">
-        {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold text-brand-navy">
-            Leads Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            View and manage all roofing quote submissions.
-          </p>
-        </div>
-
-        {/* Not logged in */}
-        {!isLoggedIn && (
-          <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
-            <div className="w-20 h-20 bg-brand-navy/8 rounded-full flex items-center justify-center">
-              <LogIn className="w-10 h-10 text-brand-navy" />
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-2xl text-brand-navy">
-                Admin Login Required
-              </h2>
-              <p className="text-muted-foreground mt-2 max-w-sm">
-                You must be logged in as an administrator to view lead
-                submissions.
-              </p>
-            </div>
-            <Button
-              onClick={login}
-              disabled={isLoggingIn || isInitializing}
-              size="lg"
-              className="bg-brand-orange hover:bg-brand-orange-hover text-white border-0 px-8"
-              data-ocid="dashboard.primary_button"
-            >
-              {isLoggingIn ? (
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              ) : (
-                <LogIn className="w-5 h-5 mr-2" />
-              )}
-              Login with Internet Identity
-            </Button>
-          </div>
-        )}
-
-        {/* Loading admin status */}
-        {isLoggedIn && adminLoading && (
-          <div
-            data-ocid="dashboard.loading_state"
-            className="flex items-center justify-center gap-3 py-24"
-          >
-            <Loader2 className="w-6 h-6 text-brand-navy animate-spin" />
-            <span className="text-muted-foreground">
-              Checking permissions...
-            </span>
-          </div>
-        )}
-
-        {/* Access denied - show claim admin form */}
-        {isLoggedIn && !adminLoading && !isAdmin && (
-          <div className="flex flex-col items-center justify-center gap-6 py-16 text-center">
-            {claimSuccess ? (
-              <>
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-                  <ShieldCheck className="w-10 h-10 text-green-600" />
-                </div>
-                <div>
-                  <h2 className="font-display font-bold text-2xl text-brand-navy">
-                    Admin Access Granted
-                  </h2>
-                  <p className="text-muted-foreground mt-2 max-w-sm">
-                    You now have administrator access. Reload the page to view
-                    your leads.
+      <main className="flex-1 w-full">
+        {!isAuthenticated ? (
+          /* Password Gate */
+          <div className="flex items-center justify-center min-h-[80vh] px-4">
+            <div className="w-full max-w-sm">
+              <div className="bg-white rounded-2xl border border-border shadow-xl p-8">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="w-14 h-14 bg-brand-navy rounded-xl flex items-center justify-center mb-4">
+                    <Lock className="w-7 h-7 text-brand-orange" />
+                  </div>
+                  <h1 className="font-display text-2xl font-bold text-brand-navy">
+                    Admin Dashboard
+                  </h1>
+                  <p className="text-muted-foreground text-sm mt-1 text-center">
+                    Enter the admin password to view leads.
                   </p>
                 </div>
-                <Button
-                  onClick={() => window.location.reload()}
-                  className="bg-brand-orange hover:bg-brand-orange-hover text-white border-0 px-8"
-                >
-                  View Leads Dashboard
-                </Button>
-              </>
-            ) : (
-              <>
-                <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center">
-                  <ShieldAlert className="w-10 h-10 text-amber-600" />
-                </div>
-                <div>
-                  <h2 className="font-display font-bold text-2xl text-brand-navy">
-                    Set Up Admin Access
-                  </h2>
-                  <p className="text-muted-foreground mt-2 max-w-sm">
-                    Enter your Caffeine admin token to claim administrator
-                    access for this app. You only need to do this once.
-                  </p>
-                </div>
-                <div className="w-full max-w-sm space-y-3">
-                  <div className="relative">
-                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label
+                      htmlFor="admin-password"
+                      className="text-brand-navy font-medium"
+                    >
+                      Password
+                    </Label>
                     <Input
+                      id="admin-password"
                       type="password"
-                      placeholder="Enter admin token"
-                      value={adminToken}
-                      onChange={(e) => setAdminToken(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleClaimAdmin()}
-                      className="pl-9"
-                      data-ocid="dashboard.input"
+                      placeholder="Enter password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (error) setError("");
+                      }}
+                      className="border-border focus:border-brand-orange"
+                      data-ocid="admin.password_input"
+                      autoFocus
                     />
                   </div>
-                  {claimError && (
+
+                  {error && (
                     <p
-                      className="text-red-600 text-sm"
-                      data-ocid="dashboard.error_state"
+                      className="text-red-500 text-sm"
+                      data-ocid="admin.error_state"
                     >
-                      {claimError}
+                      {error}
                     </p>
                   )}
-                  <Button
-                    onClick={handleClaimAdmin}
-                    disabled={claimAdmin.isPending || !adminToken}
-                    className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white border-0"
-                    data-ocid="dashboard.primary_button"
-                  >
-                    {claimAdmin.isPending ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <ShieldCheck className="w-4 h-4 mr-2" />
-                    )}
-                    Claim Admin Access
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    Find your admin token in the Caffeine platform under your
-                    app settings.
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={clear}
-                  className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </>
-            )}
-          </div>
-        )}
 
-        {/* Admin: Leads Table */}
-        {isLoggedIn && isAdmin && (
-          <div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white border-0 font-semibold"
+                    data-ocid="admin.submit_button"
+                  >
+                    Enter Dashboard
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Leads Dashboard */
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full">
+            <div className="mb-8">
+              <h1 className="font-display text-3xl font-bold text-brand-navy">
+                Leads Dashboard
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                View and manage all roofing quote submissions.
+              </p>
+            </div>
+
             {/* Stats row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
@@ -455,7 +361,7 @@ export default function Dashboard() {
                           </TableCell>
                           <TableCell className="max-w-[200px]">
                             <span className="text-muted-foreground text-sm truncate block">
-                              {lead.message ?? "—"}
+                              {lead.message ?? "--"}
                             </span>
                           </TableCell>
                           <TableCell className="text-muted-foreground text-sm whitespace-nowrap">

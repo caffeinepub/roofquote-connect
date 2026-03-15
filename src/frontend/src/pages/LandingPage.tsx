@@ -26,6 +26,8 @@ import {
   ThumbsUp,
   Users,
   Wrench,
+  X,
+  Zap,
 } from "lucide-react";
 import { AnimatePresence, type Variants, motion } from "motion/react";
 import { useRef, useState } from "react";
@@ -55,9 +57,119 @@ const fadeUp: Variants = {
   }),
 };
 
+const STATS = [
+  { number: "2,400+", label: "Quotes Matched This Year" },
+  { number: "4.9 / 5", label: "Average Customer Rating" },
+  { number: "92%", label: "Get a Response Same Day" },
+  { number: "£350", label: "Average Saving vs Calling Direct" },
+];
+
+const ACCREDITATIONS = [
+  { icon: "✅", label: "Fully Insured Contractors" },
+  { icon: "🏆", label: "Which? Trusted Trader Network" },
+  { icon: "🛡️", label: "Public Liability Cover" },
+  { icon: "📋", label: "Free Written Quotes" },
+  { icon: "🔧", label: "All Work Guaranteed" },
+  { icon: "⏰", label: "24/7 Emergency Response" },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Gary P.",
+    location: "Stretford, Manchester",
+    rating: 5,
+    text: "Had three ridge tiles blow off in the storm last month. Called two companies who never got back to me, then tried RoofQuote Connect. Had a local lad from Stretford ring me back within the hour. Job done the next morning for £180. Can't complain.",
+  },
+  {
+    name: "Diane H.",
+    location: "Didsbury, Manchester",
+    rating: 5,
+    text: "Our Edwardian terrace has original Welsh slate and I was worried nobody would touch it. RoofQuote matched us with a specialist who actually knew his stuff — repaired six broken slates and repointed the entire ridge for £420. Saved us a fortune compared to what the big firms quoted.",
+  },
+  {
+    name: "Rob & Karen T.",
+    location: "Chorlton, Manchester",
+    rating: 5,
+    text: "Full flat roof replacement on the back extension. Three quotes through RoofQuote Connect — all came out within a week, all professional. Went with the middle quote, £2,200, and the work was done in a single day. 10-year guarantee on the EPDM membrane. Chuffed to bits.",
+  },
+];
+
+const TEAM = [
+  {
+    name: "Dave Morrish",
+    role: "Lead Roofer — 18 Years Experience",
+    area: "North Manchester",
+  },
+  {
+    name: "Steve Baines",
+    role: "Flat Roof Specialist — 12 Years Experience",
+    area: "Salford & Eccles",
+  },
+  {
+    name: "Andy Calvert",
+    role: "Slate & Heritage Roofing — 22 Years Experience",
+    area: "South Manchester",
+  },
+];
+
+const GALLERY = [
+  {
+    src: "/assets/generated/completed-roof-1.dim_800x600.jpg",
+    alt: "New slate roof on Victorian terrace, Manchester",
+    label: "Slate Roof Replacement",
+  },
+  {
+    src: "/assets/generated/completed-roof-2.dim_800x600.jpg",
+    alt: "Flat roof extension replacement, Manchester",
+    label: "Flat Roof Replacement",
+  },
+  {
+    src: "/assets/generated/completed-roof-3.dim_800x600.jpg",
+    alt: "Chimney repointing completed, Manchester",
+    label: "Chimney Repointing",
+  },
+  {
+    src: "/assets/generated/completed-roof-4.dim_800x600.jpg",
+    alt: "Ridge tile replacement in progress",
+    label: "Ridge Tile Replacement",
+  },
+  {
+    src: "/assets/generated/roofer-closeup.dim_800x600.jpg",
+    alt: "Roofer laying new slate tiles in Manchester",
+    label: "Slate Tile Repair",
+  },
+  {
+    src: "/assets/generated/roofer-working.dim_800x600.jpg",
+    alt: "Professional roofer working on Manchester home",
+    label: "Emergency Repair",
+  },
+];
+
+const BEFORE_AFTERS = [
+  {
+    src: "/assets/generated/before-after-1.dim_1200x500.jpg",
+    alt: "Slate roof before and after restoration",
+    title: "Slate Roof Restoration",
+    desc: "Full re-slate on a Manchester Victorian terrace",
+  },
+  {
+    src: "/assets/generated/before-after-2.dim_1200x500.jpg",
+    alt: "Flat roof before and after replacement",
+    title: "Flat Roof Replacement",
+    desc: "EPDM rubber membrane on rear extension",
+  },
+  {
+    src: "/assets/generated/before-after-3.dim_1200x500.jpg",
+    alt: "Chimney stack before and after repointing",
+    title: "Chimney Rebuild & Repoint",
+    desc: "Full chimney restoration in Salford",
+  },
+];
+
 export default function LandingPage() {
   const formRef = useRef<HTMLDivElement>(null);
   const { mutate: submitLead, isPending, isSuccess, isError } = useSubmitLead();
+  const [bannerVisible, setBannerVisible] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -102,6 +214,38 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      {/* Urgency Banner */}
+      <AnimatePresence>
+        {bannerVisible && (
+          <motion.div
+            initial={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div
+              data-ocid="urgency.section"
+              className="relative bg-brand-orange py-2.5 px-4 text-white text-sm font-semibold text-center flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4 shrink-0" />
+              <span>
+                High demand this week — our roofers have limited availability.
+                Secure your free quote now.
+              </span>
+              <button
+                type="button"
+                onClick={() => setBannerVisible(false)}
+                aria-label="Dismiss banner"
+                data-ocid="urgency.close_button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Sticky Header */}
       <header
         data-ocid="header.section"
@@ -128,6 +272,13 @@ export default function LandingPage() {
               <span className="hidden sm:inline">{PHONE_NUMBER}</span>
               <span className="sm:hidden">Call Us</span>
             </a>
+            <Link
+              to="/dashboard"
+              className="text-white/60 hover:text-white text-sm transition-colors px-2 py-1"
+              data-ocid="header.admin_link"
+            >
+              Admin
+            </Link>
             <Button
               onClick={scrollToForm}
               size="sm"
@@ -137,13 +288,6 @@ export default function LandingPage() {
               <span className="hidden sm:inline">Get Free Quote</span>
               <span className="sm:hidden">Free Quote</span>
             </Button>
-            <Link
-              to="/dashboard"
-              className="text-white/60 hover:text-white text-xs transition-colors"
-              data-ocid="header.link"
-            >
-              Admin
-            </Link>
           </div>
         </div>
       </header>
@@ -151,16 +295,16 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section
         data-ocid="hero.section"
-        className="relative min-h-[600px] flex items-center overflow-hidden"
+        className="relative min-h-[640px] flex items-center overflow-hidden"
         style={{
           backgroundImage:
-            "url('/assets/generated/roofing-hero-bg.dim_1440x600.jpg')",
+            "url('/assets/generated/hero-roof-aerial.dim_1440x700.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center top",
         }}
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-hero-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/90 via-brand-navy/75 to-brand-navy/40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
@@ -479,8 +623,57 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Social Proof Stat Bar */}
+      <section data-ocid="stats.section" className="bg-brand-navy py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {STATS.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={i}
+                className="flex flex-col items-center text-center gap-1"
+              >
+                <span className="text-brand-orange font-display font-bold text-3xl sm:text-4xl leading-none">
+                  {stat.number}
+                </span>
+                <span className="text-white/70 text-sm leading-snug max-w-[140px]">
+                  {stat.label}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Accreditation Strip */}
+      <section
+        data-ocid="accreditations.section"
+        className="bg-brand-grey border-b border-brand-grey-mid py-8"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <p className="text-center text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-5">
+            All Contractors Are Verified &amp; Accredited
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {ACCREDITATIONS.map((acc) => (
+              <span
+                key={acc.label}
+                className="inline-flex items-center gap-2 bg-white border border-brand-grey-mid rounded-full px-4 py-2 text-sm font-medium text-brand-navy shadow-xs"
+              >
+                <span>{acc.icon}</span>
+                {acc.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Trust Badges */}
-      <section data-ocid="trust.section" className="bg-brand-grey py-12">
+      <section data-ocid="trust.section" className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -512,7 +705,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 variants={fadeUp}
                 custom={i}
-                className="flex flex-col items-center text-center gap-3 p-5 bg-white rounded-xl shadow-card"
+                className="flex flex-col items-center text-center gap-3 p-5 bg-brand-grey rounded-xl shadow-card"
               >
                 <div className="w-16 h-16 bg-brand-navy/8 rounded-full flex items-center justify-center">
                   {badge.icon}
@@ -532,7 +725,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section data-ocid="how_it_works.section" className="py-16 bg-white">
+      <section data-ocid="how_it_works.section" className="py-16 bg-brand-grey">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
@@ -552,9 +745,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connector line on desktop */}
             <div className="hidden md:block absolute top-10 left-1/3 right-1/3 h-0.5 bg-brand-grey-mid" />
-
             {[
               {
                 step: "01",
@@ -625,7 +816,7 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits */}
-      <section data-ocid="benefits.section" className="py-16 bg-brand-grey">
+      <section data-ocid="benefits.section" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
@@ -683,7 +874,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 variants={fadeUp}
                 custom={i % 3}
-                className="bg-white rounded-xl p-6 shadow-card flex gap-4 items-start group hover:shadow-card-hover transition-shadow"
+                className="bg-brand-grey rounded-xl p-6 shadow-card flex gap-4 items-start group hover:shadow-card-hover transition-shadow"
               >
                 <div className="w-11 h-11 bg-brand-navy/8 rounded-lg flex items-center justify-center shrink-0 group-hover:bg-brand-navy/12 transition-colors">
                   {benefit.icon}
@@ -702,6 +893,294 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Before / After Section */}
+      <section data-ocid="before_after.section" className="py-16 bg-brand-grey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
+              See The Difference We Make
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Hundreds of Manchester homes transformed by our vetted roofing
+              contractors.
+            </p>
+          </motion.div>
+
+          <div className="space-y-8">
+            {BEFORE_AFTERS.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={i}
+                className="rounded-2xl overflow-hidden shadow-card-hover bg-white"
+              >
+                <div className="relative">
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    className="w-full object-cover"
+                    style={{ aspectRatio: "12/5" }}
+                  />
+                  <div className="absolute top-4 left-4 bg-black/60 text-white text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded">
+                    Before
+                  </div>
+                  <div className="absolute top-4 right-4 bg-brand-orange text-white text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded">
+                    After
+                  </div>
+                  <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white/80 shadow-sm" />
+                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center">
+                    <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center shadow-md">
+                      <ChevronRight className="w-4 h-4 text-brand-navy -ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+                <div className="px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-brand-navy">
+                      {item.title}
+                    </p>
+                    <p className="text-muted-foreground text-sm">{item.desc}</p>
+                  </div>
+                  <CheckCircle className="w-6 h-6 text-green-500 shrink-0" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Roofer in action + stats */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={3}
+            className="mt-8 grid lg:grid-cols-2 gap-6 items-start"
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-card">
+              <img
+                src="/assets/generated/roofer-closeup.dim_800x600.jpg"
+                alt="Roofer laying new slate tiles in Manchester"
+                className="w-full object-cover"
+                style={{ aspectRatio: "4/3" }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-brand-navy/90 to-transparent px-5 py-4">
+                <p className="text-white text-sm font-medium">
+                  Our vetted contractors at work across Manchester
+                </p>
+              </div>
+            </div>
+
+            {/* Job completion stats */}
+            <div className="flex flex-col gap-4">
+              <div className="relative rounded-2xl overflow-hidden shadow-card">
+                <img
+                  src="/assets/generated/roofer-working.dim_800x600.jpg"
+                  alt="Professional roofer at work"
+                  className="w-full object-cover"
+                  style={{ aspectRatio: "4/3" }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-brand-navy/90 to-transparent px-5 py-4">
+                  <p className="text-white text-sm font-medium">
+                    Professional, safe, and reliable every time
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { number: "47", label: "Roofs Repaired This Month" },
+                  { number: "12", label: "Full Replacements Completed" },
+                  { number: "3", label: "Emergency Call-Outs This Week" },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="bg-white rounded-xl p-4 text-center shadow-card"
+                  >
+                    <p className="font-display font-bold text-2xl text-brand-orange">
+                      {s.number}
+                    </p>
+                    <p className="text-muted-foreground text-xs leading-tight mt-1">
+                      {s.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Photo Gallery */}
+      <section data-ocid="gallery.section" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
+              Recent Completed Jobs
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              A snapshot of recent roofing work completed by our network of
+              Manchester contractors.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            {GALLERY.map((item, i) => (
+              <motion.div
+                key={item.src}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={i % 3}
+                className="relative rounded-xl overflow-hidden shadow-card group cursor-pointer"
+                data-ocid={`gallery.item.${i + 1}`}
+              >
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  style={{ aspectRatio: "4/3" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <p className="text-white font-semibold text-sm">
+                    {item.label}
+                  </p>
+                </div>
+                {/* Always visible label */}
+                <div className="absolute top-3 left-3">
+                  <span className="bg-brand-navy/70 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                    {item.label}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={3}
+            className="text-center mt-8"
+          >
+            <Button
+              onClick={scrollToForm}
+              size="lg"
+              className="bg-brand-navy hover:bg-brand-navy/90 text-white font-bold px-8 py-6 text-lg border-0"
+            >
+              Get a Quote for Your Roof
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Meet the Team */}
+      <section data-ocid="team.section" className="py-16 bg-brand-grey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
+              Meet Your Local Roofers
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Experienced professionals covering every area of Manchester and
+              Greater Manchester.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={1}
+              className="rounded-2xl overflow-hidden shadow-card-hover"
+            >
+              <img
+                src="/assets/generated/team-photo.dim_1200x600.jpg"
+                alt="RoofQuote Connect roofing team in Manchester"
+                className="w-full object-cover"
+                style={{ aspectRatio: "2/1" }}
+              />
+            </motion.div>
+
+            <div className="space-y-4">
+              {TEAM.map((member, i) => (
+                <motion.div
+                  key={member.name}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  custom={i + 1}
+                  className="bg-white rounded-xl p-5 shadow-card flex items-center gap-4"
+                  data-ocid={`team.item.${i + 1}`}
+                >
+                  <div className="w-14 h-14 bg-brand-navy rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0">
+                    {member.name[0]}
+                  </div>
+                  <div>
+                    <p className="font-display font-bold text-brand-navy">
+                      {member.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {member.role}
+                    </p>
+                    <p className="text-xs text-brand-orange font-medium mt-0.5 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {member.area}
+                    </p>
+                  </div>
+                  <CheckCircle className="w-5 h-5 text-green-500 ml-auto shrink-0" />
+                </motion.div>
+              ))}
+
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={4}
+                className="bg-brand-navy rounded-xl p-5 text-center"
+              >
+                <p className="text-white font-semibold mb-1">
+                  + 40 more contractors across Greater Manchester
+                </p>
+                <p className="text-white/60 text-sm">
+                  All vetted, insured, and reviewed by homeowners
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section data-ocid="testimonials.section" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -711,7 +1190,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             variants={fadeUp}
             custom={0}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
               What Manchester Homeowners Say
@@ -721,27 +1200,66 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
+          {/* Aggregate review summary bar */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={1}
+            className="bg-brand-grey rounded-2xl p-6 sm:p-8 mb-10 flex flex-col sm:flex-row items-center justify-between gap-6"
+          >
+            <div className="flex items-center gap-5">
+              <div className="text-center">
+                <span className="font-display font-bold text-5xl text-brand-navy leading-none">
+                  4.9
+                </span>
+                <div className="flex justify-center mt-1">
+                  {STAR_KEYS.map((k) => (
+                    <Star
+                      key={k}
+                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="font-semibold text-brand-navy text-base">
+                  Based on 312 verified reviews
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  From real homeowners across Manchester
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center sm:justify-end gap-3">
+              {[
+                {
+                  label: "Google Reviews",
+                  color: "bg-blue-50 text-blue-700 border-blue-200",
+                },
+                {
+                  label: "Trustpilot",
+                  color: "bg-green-50 text-green-700 border-green-200",
+                },
+                {
+                  label: "Facebook",
+                  color: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                },
+              ].map((platform) => (
+                <span
+                  key={platform.label}
+                  className={`inline-flex items-center border rounded-full px-4 py-1.5 text-sm font-semibold ${platform.color}`}
+                >
+                  {platform.label}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Sarah M.",
-                location: "Salford, Manchester",
-                rating: 5,
-                text: "After noticing a leak in my loft, I used RoofQuote Connect and had three local roofers contact me within the same day. The work was done quickly and professionally. Brilliant service!",
-              },
-              {
-                name: "David K.",
-                location: "Stockport, Greater Manchester",
-                rating: 5,
-                text: "I needed my entire roof replacing after storm damage. Got four competitive quotes within 48 hours. Saved a fortune compared to the first company I called directly. Highly recommend.",
-              },
-              {
-                name: "Lisa T.",
-                location: "Trafford, Manchester",
-                rating: 5,
-                text: "Fast, easy, and completely free. The roofer they connected me with was punctual, tidy, and did an excellent job on my flat roof. I'll definitely use RoofQuote Connect again.",
-              },
-            ].map((t, i) => (
+            {TESTIMONIALS.map((t, i) => (
               <motion.div
                 key={t.name}
                 initial="hidden"
@@ -750,6 +1268,7 @@ export default function LandingPage() {
                 variants={fadeUp}
                 custom={i}
                 className="bg-white border border-border rounded-2xl p-6 shadow-card relative"
+                data-ocid={`testimonials.item.${i + 1}`}
               >
                 <div className="absolute top-4 right-5 text-5xl text-brand-navy/10 font-display font-bold leading-none">
                   &ldquo;
@@ -782,7 +1301,6 @@ export default function LandingPage() {
         data-ocid="cta.section"
         className="py-20 bg-brand-navy relative overflow-hidden"
       >
-        {/* Background pattern */}
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -927,7 +1445,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center gap-1.5 text-white/60 text-sm">
                   <Facebook className="w-3.5 h-3.5" />
-                  roof quote connect
+                  Roof quote connect
                 </li>
                 <li>
                   <a

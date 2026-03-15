@@ -31,6 +31,7 @@ export enum UserRole {
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getAllLeads(): Promise<Array<Lead>>;
+    getAllLeadsPublic(): Promise<Array<Lead>>;
     getCallerUserRole(): Promise<UserRole>;
     isCallerAdmin(): Promise<boolean>;
     submitLead(name: string, phone: string, email: string, postcode: string, jobType: JobType, message: string | null): Promise<Lead>;

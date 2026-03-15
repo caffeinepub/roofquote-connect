@@ -27,11 +27,18 @@ actor {
     createdAt : Int;
   };
 
-  let leads = Map.empty<Nat, Lead>();
-  var nextLeadId = 0;
+  stable var stableLeads : [(Nat, Lead)] = [];
+  stable var stableNextLeadId : Nat = 0;
+
+  let leads = Map.fromIter<Nat, Lead>(stableLeads.vals());
+  var nextLeadId = stableNextLeadId;
+
+  system func preupgrade() {
+    stableLeads := leads.entries().toArray();
+    stableNextLeadId := nextLeadId;
+  };
 
   public shared ({ caller }) func submitLead(name : Text, phone : Text, email : Text, postcode : Text, jobType : JobType, message : ?Text) : async Lead {
-    // Validate input (basic)
     if (name == "" or phone == "" or email == "" or postcode == "") {
       Runtime.trap("All fields except message are required");
     };
@@ -57,6 +64,10 @@ actor {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view all leads");
     };
+    leads.values().toArray();
+  };
+
+  public query func getAllLeadsPublic() : async [Lead] {
     leads.values().toArray();
   };
 };

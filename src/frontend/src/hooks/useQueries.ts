@@ -14,6 +14,18 @@ export function useGetAllLeads() {
   });
 }
 
+export function useGetAllLeadsPublic() {
+  const { actor, isFetching } = useActor();
+  return useQuery<Lead[]>({
+    queryKey: ["leadsPublic"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllLeadsPublic();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
 export function useIsAdmin() {
   const { actor, isFetching } = useActor();
   return useQuery<boolean>({
@@ -29,11 +41,26 @@ export function useIsAdmin() {
 export function useClaimAdmin() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
-  return useMutation<void, Error, string>({
-    mutationFn: async (token: string) => {
+  return useMutation<void, Error, void>({
+    mutationFn: async () => {
       if (!actor) throw new Error("Not connected");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (actor as any)._initializeAccessControlWithSecret(token);
+      await (actor as any)._initializeAccessControl();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isAdmin"] });
+    },
+  });
+}
+
+export function useResetAdmin() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, void>({
+    mutationFn: async () => {
+      if (!actor) throw new Error("Not connected");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (actor as any).resetAdminAccess();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["isAdmin"] });

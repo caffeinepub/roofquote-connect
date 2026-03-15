@@ -114,6 +114,7 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getAllLeads(): Promise<Array<Lead>>;
+    getAllLeadsPublic(): Promise<Array<Lead>>;
     getCallerUserRole(): Promise<UserRole>;
     isCallerAdmin(): Promise<boolean>;
     submitLead(name: string, phone: string, email: string, postcode: string, jobType: JobType, message: string | null): Promise<Lead>;
@@ -160,6 +161,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getAllLeads();
+            return from_candid_vec_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getAllLeadsPublic(): Promise<Array<Lead>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllLeadsPublic();
+                return from_candid_vec_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllLeadsPublic();
             return from_candid_vec_n3(this._uploadFile, this._downloadFile, result);
         }
     }

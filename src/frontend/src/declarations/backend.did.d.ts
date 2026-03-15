@@ -31,6 +31,7 @@ export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getAllLeads' : ActorMethod<[], Array<Lead>>,
+  'getAllLeadsPublic' : ActorMethod<[], Array<Lead>>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'submitLead' : ActorMethod<
