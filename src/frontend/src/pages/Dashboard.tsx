@@ -28,7 +28,7 @@ import type { Lead } from "../backend";
 import { JobType } from "../backend";
 import { useGetAllLeadsPublic } from "../hooks/useQueries";
 
-const ADMIN_PASSWORD = "alfie1234";
+const ADMIN_PASSWORD = "KangaroosandAustralia2026!!";
 const SESSION_KEY = "rqc_admin_auth";
 
 const JOB_TYPE_LABELS: Record<JobType, string> = {
