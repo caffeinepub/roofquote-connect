@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -94,24 +100,6 @@ const TESTIMONIALS = [
   },
 ];
 
-const TEAM = [
-  {
-    name: "Dave Morrish",
-    role: "Lead Roofer — 18 Years Experience",
-    area: "North Manchester",
-  },
-  {
-    name: "Steve Baines",
-    role: "Flat Roof Specialist — 12 Years Experience",
-    area: "Salford & Eccles",
-  },
-  {
-    name: "Andy Calvert",
-    role: "Slate & Heritage Roofing — 22 Years Experience",
-    area: "South Manchester",
-  },
-];
-
 const GALLERY = [
   {
     src: "/assets/generated/completed-roof-1.dim_800x600.jpg",
@@ -127,21 +115,6 @@ const GALLERY = [
     src: "/assets/generated/completed-roof-3.dim_800x600.jpg",
     alt: "Chimney repointing completed, Manchester",
     label: "Chimney Repointing",
-  },
-  {
-    src: "/assets/generated/completed-roof-4.dim_800x600.jpg",
-    alt: "Ridge tile replacement in progress",
-    label: "Ridge Tile Replacement",
-  },
-  {
-    src: "/assets/generated/roofer-closeup.dim_800x600.jpg",
-    alt: "Roofer laying new slate tiles in Manchester",
-    label: "Slate Tile Repair",
-  },
-  {
-    src: "/assets/generated/roofer-working.dim_800x600.jpg",
-    alt: "Professional roofer working on Manchester home",
-    label: "Emergency Repair",
   },
 ];
 
@@ -170,6 +143,9 @@ export default function LandingPage() {
   const formRef = useRef<HTMLDivElement>(null);
   const { mutate: submitLead, isPending, isSuccess, isError } = useSubmitLead();
   const [bannerVisible, setBannerVisible] = useState(true);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -296,16 +272,8 @@ export default function LandingPage() {
       <section
         data-ocid="hero.section"
         className="relative min-h-[640px] flex items-center overflow-hidden"
-        style={{
-          backgroundImage:
-            "url('/assets/generated/hero-roof-aerial.dim_1440x700.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-        }}
+        style={{ backgroundColor: "#0a1628" }}
       >
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/90 via-brand-navy/75 to-brand-navy/40" />
-
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             {/* Hero Text */}
@@ -956,66 +924,6 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-
-          {/* Roofer in action + stats */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={3}
-            className="mt-8 grid lg:grid-cols-2 gap-6 items-start"
-          >
-            <div className="relative rounded-2xl overflow-hidden shadow-card">
-              <img
-                src="/assets/generated/roofer-closeup.dim_800x600.jpg"
-                alt="Roofer laying new slate tiles in Manchester"
-                className="w-full object-cover"
-                style={{ aspectRatio: "4/3" }}
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-brand-navy/90 to-transparent px-5 py-4">
-                <p className="text-white text-sm font-medium">
-                  Our vetted contractors at work across Manchester
-                </p>
-              </div>
-            </div>
-
-            {/* Job completion stats */}
-            <div className="flex flex-col gap-4">
-              <div className="relative rounded-2xl overflow-hidden shadow-card">
-                <img
-                  src="/assets/generated/roofer-working.dim_800x600.jpg"
-                  alt="Professional roofer at work"
-                  className="w-full object-cover"
-                  style={{ aspectRatio: "4/3" }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-brand-navy/90 to-transparent px-5 py-4">
-                  <p className="text-white text-sm font-medium">
-                    Professional, safe, and reliable every time
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { number: "47", label: "Roofs Repaired This Month" },
-                  { number: "12", label: "Full Replacements Completed" },
-                  { number: "3", label: "Emergency Call-Outs This Week" },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    className="bg-white rounded-xl p-4 text-center shadow-card"
-                  >
-                    <p className="font-display font-bold text-2xl text-brand-orange">
-                      {s.number}
-                    </p>
-                    <p className="text-muted-foreground text-xs leading-tight mt-1">
-                      {s.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
 
@@ -1090,94 +998,6 @@ export default function LandingPage() {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Meet the Team */}
-      <section data-ocid="team.section" className="py-16 bg-brand-grey">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={0}
-            className="text-center mb-10"
-          >
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-navy mb-3">
-              Meet Your Local Roofers
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Experienced professionals covering every area of Manchester and
-              Greater Manchester.
-            </p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={1}
-              className="rounded-2xl overflow-hidden shadow-card-hover"
-            >
-              <img
-                src="/assets/generated/team-photo.dim_1200x600.jpg"
-                alt="RoofQuote Connect roofing team in Manchester"
-                className="w-full object-cover"
-                style={{ aspectRatio: "2/1" }}
-              />
-            </motion.div>
-
-            <div className="space-y-4">
-              {TEAM.map((member, i) => (
-                <motion.div
-                  key={member.name}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
-                  custom={i + 1}
-                  className="bg-white rounded-xl p-5 shadow-card flex items-center gap-4"
-                  data-ocid={`team.item.${i + 1}`}
-                >
-                  <div className="w-14 h-14 bg-brand-navy rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0">
-                    {member.name[0]}
-                  </div>
-                  <div>
-                    <p className="font-display font-bold text-brand-navy">
-                      {member.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {member.role}
-                    </p>
-                    <p className="text-xs text-brand-orange font-medium mt-0.5 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {member.area}
-                    </p>
-                  </div>
-                  <CheckCircle className="w-5 h-5 text-green-500 ml-auto shrink-0" />
-                </motion.div>
-              ))}
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                custom={4}
-                className="bg-brand-navy rounded-xl p-5 text-center"
-              >
-                <p className="text-white font-semibold mb-1">
-                  + 40 more contractors across Greater Manchester
-                </p>
-                <p className="text-white/60 text-sm">
-                  All vetted, insured, and reviewed by homeowners
-                </p>
-              </motion.div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -1398,7 +1218,11 @@ export default function LandingPage() {
                     href: "#",
                     action: scrollToForm,
                   },
-                  { label: "How It Works", href: "#how-it-works" },
+                  {
+                    label: "How It Works",
+                    href: "#how-it-works",
+                    action: () => setShowHowItWorks(true),
+                  },
                 ].map((link) => (
                   <li key={link.label}>
                     {link.action ? (
@@ -1448,21 +1272,24 @@ export default function LandingPage() {
                   Roof quote connect
                 </li>
                 <li>
-                  <a
-                    id="privacy"
-                    href="#privacy"
-                    className="text-white/60 hover:text-white text-sm transition-colors"
+                  <button
+                    type="button"
+                    data-ocid="privacy.open_modal_button"
+                    onClick={() => setShowPrivacy(true)}
+                    className="text-white/60 hover:text-white text-sm transition-colors text-left"
                   >
                     Privacy Policy
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#terms"
-                    className="text-white/60 hover:text-white text-sm transition-colors"
+                  <button
+                    type="button"
+                    data-ocid="terms.open_modal_button"
+                    onClick={() => setShowTerms(true)}
+                    className="text-white/60 hover:text-white text-sm transition-colors text-left"
                   >
                     Terms &amp; Conditions
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -1487,6 +1314,352 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Privacy Policy Modal */}
+      <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
+        <DialogContent
+          data-ocid="privacy.dialog"
+          className="max-w-2xl max-h-[90vh] flex flex-col"
+        >
+          <DialogHeader className="flex flex-row items-center justify-between pr-8">
+            <DialogTitle className="text-xl font-bold text-[#1a2f5a]">
+              Privacy Policy
+            </DialogTitle>
+          </DialogHeader>
+          <button
+            type="button"
+            data-ocid="privacy.close_button"
+            onClick={() => setShowPrivacy(false)}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div
+            className="overflow-y-auto flex-1 pr-1 space-y-5 text-sm text-gray-700 leading-relaxed"
+            style={{ maxHeight: "70vh" }}
+          >
+            <p className="text-xs text-gray-400">Last updated: 15 March 2026</p>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                1. Who We Are
+              </h3>
+              <p>
+                RoofQuote Connect is a lead-matching service based in
+                Manchester, helping homeowners across Greater Manchester and the
+                UK find trusted local roofing contractors. If you have any
+                questions about this policy, contact us at{" "}
+                <a
+                  href="mailto:roofquoteconnect@gmail.com"
+                  className="text-[#e07b2a] underline"
+                >
+                  roofquoteconnect@gmail.com
+                </a>{" "}
+                or call{" "}
+                <a href="tel:07400701164" className="text-[#e07b2a] underline">
+                  07400 701164
+                </a>
+                .
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                2. What Data We Collect
+              </h3>
+              <p>
+                When you submit an enquiry through our website, we collect the
+                following personal data: your full name, phone number, email
+                address, postcode, the type of roofing work required, and any
+                additional message you choose to provide.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                3. How We Use Your Data
+              </h3>
+              <p>
+                Your data is used solely to match you with local, vetted roofing
+                contractors in your area who can provide a quote for the work
+                you require. We do not sell, rent, or share your personal data
+                with any third parties unrelated to fulfilling your roofing
+                enquiry.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                4. Legal Basis for Processing
+              </h3>
+              <p>
+                We process your data on the basis of legitimate interest (to
+                connect you with local contractors) and consent (you submit the
+                enquiry form voluntarily). You may withdraw consent at any time
+                by contacting us.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                5. Data Retention
+              </h3>
+              <p>
+                Enquiry data is retained for up to 12 months from the date of
+                submission, after which it is securely deleted from our systems.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                6. Your Rights
+              </h3>
+              <p>
+                Under the UK General Data Protection Regulation (UK GDPR), you
+                have the right to access the personal data we hold about you,
+                request correction of inaccurate data, and request deletion of
+                your data at any time. To exercise any of these rights, please
+                email{" "}
+                <a
+                  href="mailto:roofquoteconnect@gmail.com"
+                  className="text-[#e07b2a] underline"
+                >
+                  roofquoteconnect@gmail.com
+                </a>
+                . We will respond within 30 days.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">7. Cookies</h3>
+              <p>
+                We use essential cookies only, which are strictly necessary for
+                the website to function. We do not use tracking, advertising, or
+                analytics cookies. You can disable cookies in your browser
+                settings, though this may affect some website functionality.
+              </p>
+            </section>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Terms & Conditions Modal */}
+      <Dialog open={showTerms} onOpenChange={setShowTerms}>
+        <DialogContent
+          data-ocid="terms.dialog"
+          className="max-w-2xl max-h-[90vh] flex flex-col"
+        >
+          <DialogHeader className="flex flex-row items-center justify-between pr-8">
+            <DialogTitle className="text-xl font-bold text-[#1a2f5a]">
+              Terms &amp; Conditions
+            </DialogTitle>
+          </DialogHeader>
+          <button
+            type="button"
+            data-ocid="terms.close_button"
+            onClick={() => setShowTerms(false)}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div
+            className="overflow-y-auto flex-1 pr-1 space-y-5 text-sm text-gray-700 leading-relaxed"
+            style={{ maxHeight: "70vh" }}
+          >
+            <p className="text-xs text-gray-400">Last updated: 15 March 2026</p>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                1. About This Service
+              </h3>
+              <p>
+                RoofQuote Connect is a free lead-matching service that connects
+                homeowners with independent local roofing contractors. We are
+                not a roofing company and do not carry out roofing work
+                ourselves. Use of this website constitutes acceptance of these
+                terms.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                2. No Guarantee of Work
+              </h3>
+              <p>
+                RoofQuote Connect does not guarantee the quality, availability,
+                pricing, or timescales of any roofing contractor introduced
+                through this service. We strongly advise you to obtain written
+                quotes, check contractor credentials, verify insurance, and
+                carry out your own due diligence before instructing any
+                contractor.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                3. Enquiry Submission
+              </h3>
+              <p>
+                By submitting an enquiry through our website, you agree to be
+                contacted by one or more local roofing contractors regarding
+                your request. You confirm that the information you have provided
+                is accurate to the best of your knowledge.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                4. Limitation of Liability
+              </h3>
+              <p>
+                RoofQuote Connect accepts no liability whatsoever for the
+                quality, safety, or outcome of any roofing work carried out by
+                any contractor introduced through this service. Any contract for
+                roofing work is solely between you and the contractor. Our
+                liability to you in all circumstances is limited to the maximum
+                extent permitted by law.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                5. Intellectual Property
+              </h3>
+              <p>
+                All content on this website, including but not limited to text,
+                graphics, logos, and images, is the property of RoofQuote
+                Connect and is protected by applicable intellectual property
+                laws. You may not reproduce, distribute, or use any content
+                without our express written permission.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                6. Governing Law
+              </h3>
+              <p>
+                These terms and conditions are governed by and construed in
+                accordance with the laws of England and Wales. Any disputes
+                arising from your use of this website shall be subject to the
+                exclusive jurisdiction of the courts of England and Wales.
+              </p>
+            </section>
+            <section>
+              <h3 className="font-semibold text-[#1a2f5a] mb-1">7. Contact</h3>
+              <p>
+                If you have any questions about these terms, please contact us
+                at{" "}
+                <a
+                  href="mailto:roofquoteconnect@gmail.com"
+                  className="text-[#e07b2a] underline"
+                >
+                  roofquoteconnect@gmail.com
+                </a>{" "}
+                or call{" "}
+                <a href="tel:07400701164" className="text-[#e07b2a] underline">
+                  07400 701164
+                </a>
+                .
+              </p>
+            </section>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* How It Works Modal */}
+      <Dialog open={showHowItWorks} onOpenChange={setShowHowItWorks}>
+        <DialogContent
+          data-ocid="how_it_works.dialog"
+          className="max-w-lg max-h-[80vh] overflow-y-auto"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-[#1a2f5a] text-xl font-bold">
+              How It Works
+            </DialogTitle>
+            <button
+              type="button"
+              data-ocid="how_it_works.close_button"
+              onClick={() => setShowHowItWorks(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </DialogHeader>
+          <div className="space-y-6 text-sm text-gray-700 leading-relaxed mt-2">
+            <p>
+              Getting a free roofing quote through RoofQuote Connect is quick,
+              easy, and completely free. Here's how the process works:
+            </p>
+            <div className="space-y-5">
+              <div className="flex gap-4 items-start">
+                <div className="w-10 h-10 bg-[#1a2f5a] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  01
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                    Tell Us About Your Problem
+                  </h3>
+                  <p>
+                    Fill in our simple online form with your name, contact
+                    details, postcode, and a brief description of your roofing
+                    issue. It takes less than 2 minutes and there's no
+                    obligation whatsoever.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 items-start">
+                <div className="w-10 h-10 bg-[#1a2f5a] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  02
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                    We Connect You With Local Roofers
+                  </h3>
+                  <p>
+                    Once we receive your enquiry, we match you with trusted,
+                    vetted roofing contractors in Manchester and Greater
+                    Manchester. We only work with experienced professionals who
+                    are fully insured and have a proven track record.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 items-start">
+                <div className="w-10 h-10 bg-[#1a2f5a] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  03
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#1a2f5a] mb-1">
+                    Receive Your Free Quote
+                  </h3>
+                  <p>
+                    A local roofer will contact you directly -- usually within 2
+                    hours during business hours -- to discuss your requirements
+                    and provide a competitive, no-obligation quote. You're free
+                    to accept, decline, or compare quotes from multiple
+                    contractors.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+              <p className="font-semibold text-[#1a2f5a] mb-1">
+                Completely Free, No Obligation
+              </p>
+              <p>
+                Our service is 100% free for homeowners. There are no hidden
+                fees, no sign-up costs, and no obligation to proceed. We're
+                simply here to connect you with the right roofer for the job.
+              </p>
+            </div>
+            <p>
+              If you have any questions before submitting, feel free to call us
+              on{" "}
+              <a href="tel:07400701164" className="text-[#e07b2a] underline">
+                07400 701164
+              </a>{" "}
+              or email{" "}
+              <a
+                href="mailto:roofquoteconnect@gmail.com"
+                className="text-[#e07b2a] underline"
+              >
+                roofquoteconnect@gmail.com
+              </a>
+              .
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
